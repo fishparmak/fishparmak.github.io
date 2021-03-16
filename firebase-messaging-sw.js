@@ -9,12 +9,13 @@ var firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+var messaging = firebase.messaging();
 
 // браузер поддерживает уведомления
 // вообще, эту проверку должна делать библиотека Firebase, но она этого не делает
 if ('Notification' in window) {
     console.log("here");
-    var messaging = firebase.messaging();
+
 
     // пользователь уже разрешил получение уведомлений
     // подписываем на уведомления если ещё не подписали

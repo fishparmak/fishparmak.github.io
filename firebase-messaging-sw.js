@@ -1,7 +1,14 @@
+var firebaseConfig = {
+    apiKey: "AIzaSyCuqhSq393tr6QMZdpJKu9_BcYrfbsed3o",
+    authDomain: "mycarpro-e91d1.firebaseapp.com",
+    projectId: "mycarpro-e91d1",
+    storageBucket: "mycarpro-e91d1.appspot.com",
+    messagingSenderId: "204195380911",
+    appId: "1:204195380911:web:f50b325f9733660abc1e5a",
+    measurementId: "G-1SXKVQEQWG"
+};
 
-firebase.initializeApp({
-    messagingSenderId: '<SENDER_ID>'
-});
+firebase.initializeApp(firebaseConfig);
 
 // браузер поддерживает уведомления
 // вообще, эту проверку должна делать библиотека Firebase, но она этого не делает

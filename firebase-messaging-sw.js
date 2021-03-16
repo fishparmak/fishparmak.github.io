@@ -1,4 +1,12 @@
-var firebaseConfig = {
+
+    MsgElem = document.getElementById("msg");
+    TokenElem = document.getElementById("token");
+    NotisElem = document.getElementById("notis");
+    ErrElem = document.getElementById("err");
+
+    // Initialize Firebase
+    // TODO: Replace with your project's customized code snippet
+    var config = {
     apiKey: "AIzaSyCuqhSq393tr6QMZdpJKu9_BcYrfbsed3o",
     authDomain: "mycarpro-e91d1.firebaseapp.com",
     projectId: "mycarpro-e91d1",
@@ -7,105 +15,57 @@ var firebaseConfig = {
     appId: "1:204195380911:web:f50b325f9733660abc1e5a",
     measurementId: "G-1SXKVQEQWG"
 };
+    firebase.initializeApp(config);
 
-firebase.initializeApp(firebaseConfig);
-var messaging = firebase.messaging();
+    const messaging = firebase.messaging();
+    messaging
+    .requestPermission()
+    .then(function () {
+    MsgElem.innerHTML = "Notification permission granted."
+    console.log("Notification permission granted.");
 
-// браузер поддерживает уведомления
-// вообще, эту проверку должна делать библиотека Firebase, но она этого не делает
-if ('Notification' in window) {
-    console.log("here");
+    // get the token in the form of promise
+    return messaging.getToken()
+})
+    .then(function(token) {
+    TokenElem.innerHTML = "token is : " + token
+    sendTokenToServer(currentToken);
+})
+    .catch(function (err) {
+    ErrElem.innerHTML =  ErrElem.innerHTML + "; " + err
+    console.log("Unable to get permission to notify.", err);
+});
 
-
-    // пользователь уже разрешил получение уведомлений
-    // подписываем на уведомления если ещё не подписали
-    if (Notification.permission === 'granted') {
-        subscribe();
-    }
-
-    // по клику, запрашиваем у пользователя разрешение на уведомления
-    // и подписываем его
-    $('#subscribe').on('click', function () {
-        console.log("here2");
-        subscribe();
-    });
-
+    let enableForegroundNotification = true;
     messaging.onMessage(function(payload) {
-        console.log('Message received. ', payload);
+    console.log("Message received. ", payload);
+    NotisElem.innerHTML = NotisElem.innerHTML + JSON.stringify(payload);
 
-        // регистрируем пустой ServiceWorker каждый раз
-        navigator.serviceWorker.register('messaging-sw.js');
-
-        // запрашиваем права на показ уведомлений если еще не получили их
-        Notification.requestPermission(function(result) {
-            if (result === 'granted') {
-                navigator.serviceWorker.ready.then(function(registration) {
-                    // теперь мы можем показать уведомление
-                    return registration.showNotification(payload.notification.title, payload.notification);
-                }).catch(function(error) {
-                    console.log('ServiceWorker registration failed', error);
-                });
-            }
-        });
-    });
+    if(enableForegroundNotification) {
+    const {title, ...options} = JSON.parse(payload.data.notification);
+    navigator.serviceWorker.getRegistrations().then(registration => {
+    registration[0].showNotification(title, options);
+});
 }
+});
 
-function subscribe() {
-    // запрашиваем разрешение на получение уведомлений
-    messaging.requestPermission()
-        .then(function () {
-            // получаем ID устройства
-            messaging.getToken()
-                .then(function (currentToken) {
-                    console.log(currentToken);
-
-                    if (currentToken) {
-                        sendTokenToServer(currentToken);
-                    } else {
-                        console.warn('Не удалось получить токен.');
-                        setTokenSentToServer(false);
-                    }
-                })
-                .catch(function (err) {
-                    console.warn('При получении токена произошла ошибка.', err);
-                    setTokenSentToServer(false);
-                });
-        })
-        .catch(function (err) {
-            console.warn('Не удалось получить разрешение на показ уведомлений.', err);
-        });
-}
-
-// отправка ID на сервер
-function sendTokenToServer(currentToken) {
+    // отправка ID на сервер
+    function sendTokenToServer(currentToken) {
     if (!isTokenSentToServer(currentToken)) {
-        console.log('Отправка токена на сервер...');
+    console.log('Отправка токена на сервер...');
 
-        var url = 'notification-token'; // адрес скрипта на сервере который сохраняет ID устройства
-        $.ajaxSetup({
-            headers:{
-                'Authorization': "1c68140c1a43af4bbea83860cc33ca80"
-            }
-        });
-        $.post(url, {
-            token: currentToken
-        });
-
-        setTokenSentToServer(currentToken);
-    } else {
-        console.log('Токен уже отправлен на сервер.');
-    }
+    var url = 'notification-token'; // адрес скрипта на сервере который сохраняет ID устройства
+    $.ajaxSetup({
+    headers:{
+    'Authorization': "1c68140c1a43af4bbea83860cc33ca80"
 }
+});
+    $.post(url, {
+    token: currentToken
+});
 
-// используем localStorage для отметки того,
-// что пользователь уже подписался на уведомления
-function isTokenSentToServer(currentToken) {
-    return window.localStorage.getItem('sentFirebaseMessagingToken') == currentToken;
+    setTokenSentToServer(currentToken);
+} else {
+    console.log('Токен уже отправлен на сервер.');
 }
-
-function setTokenSentToServer(currentToken) {
-    window.localStorage.setItem(
-        'sentFirebaseMessagingToken',
-        currentToken ? currentToken : ''
-    );
 }

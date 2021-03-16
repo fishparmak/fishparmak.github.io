@@ -35,7 +35,13 @@ Hello!
 <!--</script>-->
 <!--<script src="firebase-messaging-sw.js"></script>-->
 <script>
-    navigator.serviceWorker.register('firebase-messaging-sw.js')
+    if('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./firebase-messaging-sw.js')
+            .then(function(registration) {
+                console.log("Service Worker Registered");
+                messaging.useServiceWorker(registration);
+            });
+    }
 </script>
 <script src="firebase-messaging-sw.js"></script>
 </body>

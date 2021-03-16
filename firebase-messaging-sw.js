@@ -15,7 +15,6 @@ firebase.initializeApp({
     appId: "1:204195380911:web:f50b325f9733660abc1e5a",
     measurementId: "G-1SXKVQEQWG"
 });
-firebase.initializeApp(firebaseConfig);
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.

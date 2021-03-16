@@ -1,107 +1,36 @@
 <html>
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Firebase Messaging Demo</title>
-<style>
-    div {
-        margin-bottom: 15px;
-    }
-</style>
+
+</head>
 <body>
-<div id="token"></div>
-<div id="msg"></div>
-<div id="notis"></div>
-<div id="err"></div>
-<script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>
-<script>
-    GLOBAL.document = new JSDOM(html).window.document;
-    MsgElem = document.getElementById("msg");
-    TokenElem = document.getElementById("token");
-    NotisElem = document.getElementById("notis");
-    ErrElem = document.getElementById("err");
+Hello!
+<button id="subscribe">subscribe pls</button>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
 
-    // Initialize Firebase
-    // TODO: Replace with your project's customized code snippet
-    var config = {
-        apiKey: "AIzaSyCuqhSq393tr6QMZdpJKu9_BcYrfbsed3o",
-        authDomain: "mycarpro-e91d1.firebaseapp.com",
-        projectId: "mycarpro-e91d1",
-        storageBucket: "mycarpro-e91d1.appspot.com",
-        messagingSenderId: "204195380911",
-        appId: "1:204195380911:web:f50b325f9733660abc1e5a",
-        measurementId: "G-1SXKVQEQWG"
-    };
-    firebase.initializeApp(config);
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-messaging.js"></script>
 
-    const messaging = firebase.messaging();
-    messaging
-        .requestPermission()
-        .then(function () {
-            MsgElem.innerHTML = "Notification permission granted."
-            console.log("Notification permission granted.");
-
-            // get the token in the form of promise
-            return messaging.getToken()
-        })
-        .then(function(token) {
-            TokenElem.innerHTML = "token is : " + token
-            sendTokenToServer(currentToken);
-        })
-        .catch(function (err) {
-            ErrElem.innerHTML =  ErrElem.innerHTML + "; " + err
-            console.log("Unable to get permission to notify.", err);
-        });
-
-    let enableForegroundNotification = true;
-    messaging.onMessage(function(payload) {
-        console.log("Message received. ", payload);
-        NotisElem.innerHTML = NotisElem.innerHTML + JSON.stringify(payload);
-
-        if(enableForegroundNotification) {
-            const {title, ...options} = JSON.parse(payload.data.notification);
-            navigator.serviceWorker.getRegistrations().then(registration => {
-                registration[0].showNotification(title, options);
-            });
-        }
-    });
-
-    // отправка ID на сервер
-    function sendTokenToServer(currentToken) {
-        if (!isTokenSentToServer(currentToken)) {
-            console.log('Отправка токена на сервер...');
-
-            var url = 'notification-token'; // адрес скрипта на сервере который сохраняет ID устройства
-            $.ajaxSetup({
-                headers:{
-                    'Authorization': "1c68140c1a43af4bbea83860cc33ca80"
-                }
-            });
-            $.post(url, {
-                token: currentToken
-            });
-
-            setTokenSentToServer(currentToken);
-        } else {
-            console.log('Токен уже отправлен на сервер.');
-        }
-    }
-</script>
-
+<!--<script>-->
+<!--    // Your web app's Firebase configuration-->
+<!--    // For Firebase JS SDK v7.20.0 and later, measurementId is optional-->
+<!--    var firebaseConfig = {-->
+<!--        apiKey: "AIzaSyCuqhSq393tr6QMZdpJKu9_BcYrfbsed3o",-->
+<!--        authDomain: "mycarpro-e91d1.firebaseapp.com",-->
+<!--        projectId: "mycarpro-e91d1",-->
+<!--        storageBucket: "mycarpro-e91d1.appspot.com",-->
+<!--        messagingSenderId: "204195380911",-->
+<!--        appId: "1:204195380911:web:f50b325f9733660abc1e5a",-->
+<!--        measurementId: "G-1SXKVQEQWG"-->
+<!--    };-->
+<!--    // Initialize Firebase-->
+<!--    firebase.initializeApp(firebaseConfig);-->
+<!--    firebase.analytics();-->
+<!--</script>-->
+<script src="firebase-messaging-sw.js"></script>
 </body>
-
 </html>
-<!--<html>-->
-<!--<head>-->
-<!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
-
-<!--</head>-->
-<!--<body>-->
-<!--Hello!-->
-<!--<button id="subscribe">subscribe pls</button>-->
-<!--<script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>-->
-<!--<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>-->
-<!--<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-messaging.js"></script>-->
-<!--<script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-analytics.js"></script>-->
-<!--<script src="firebase-messaging-sw.js"></script>-->
-<!--</body>-->
-<!--</html>-->

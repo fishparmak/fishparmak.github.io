@@ -27,7 +27,6 @@ const messaging = firebase.messaging();
 // вообще, эту проверку должна делать библиотека Firebase, но она этого не делает
 if ('Notification' in window) {
     console.log("here");
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
     // пользователь уже разрешил получение уведомлений
     // подписываем на уведомления если ещё не подписали
     if (Notification.permission === 'granted') {

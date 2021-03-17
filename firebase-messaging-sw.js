@@ -8,12 +8,9 @@
 // https://firebase.google.com/docs/web/setup#config-object
 firebase.initializeApp({
     apiKey: "AIzaSyCuqhSq393tr6QMZdpJKu9_BcYrfbsed3o",
-    authDomain: "mycarpro-e91d1.firebaseapp.com",
     projectId: "mycarpro-e91d1",
-    storageBucket: "mycarpro-e91d1.appspot.com",
     messagingSenderId: "204195380911",
-    appId: "1:204195380911:web:f50b325f9733660abc1e5a",
-    measurementId: "G-1SXKVQEQWG"
+    appId: "1:204195380911:web:f50b325f9733660abc1e5a"
 });
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
@@ -30,7 +27,7 @@ const messaging = firebase.messaging();
 // вообще, эту проверку должна делать библиотека Firebase, но она этого не делает
 if ('Notification' in window) {
     console.log("here");
-
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
     // пользователь уже разрешил получение уведомлений
     // подписываем на уведомления если ещё не подписали
     if (Notification.permission === 'granted') {
